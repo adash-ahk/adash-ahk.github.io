@@ -25,54 +25,35 @@
 
 <body>
 	<!-- Top bar HTML -->
-	<div class="navbar">
-		<a href="#/en/donate">Donate</a>
-		<a href="#/en/news">News</a>
-		<a href="#/">Docs</a>
-		<div class="dropdown">
-			<button class="dropbtn">adash.ahk
-				<i class="fa fa-caret-down"></i>
-			</button>
-			<div class="dropdown-content">
-				<a href="#/en/home">Home</a>
-				<a href="#/en/getting-started">Getting Started</a>
-				<a href="#/en/download">Download</a>
-			</div>
-		</div>
-	</div>
 	<div id="app"></div>
 	<script>
 		// let /#concat work: rewrite to the docsify route /#/concat before docsify starts
 		if (/^#[A-Za-z_$][\w$]*$/.test(location.hash)) {
 			var _id = location.hash.slice(1);
-			if (_id !== 'en' && _id !== 'zh') location.replace('#/' + _id);
+			if (_id !== 'en' && _id !== 'ja') location.replace('#/' + _id);
 		}
 	</script>
 	<script>
 		window.$docsify = {
 			homepage: 'en/docs.md',
+			// clickable site name above the sidebar: always a way back to the docs
+			name: 'adash.ahk',
+			nameLink: { '/': '/', '/ja/': '/ja/docs' },
 			// "#/" and "#/en" -> English docs; "#concat" (-> "#/concat") -> English docs scrolled to .concat
+			loadNavbar: true,
 			alias: {
+				// one navbar per language (found from any page in that language's folder)
+				'/en/(.*/)?_navbar.md': '/en/_navbar.md',
+				'/ja/(.*/)?_navbar.md': '/ja/_navbar.md',
 				'/en/?': '/en/docs.md',
-				'/(?!en/|zh/)([A-Za-z_$][\\w$]*)': '/en/docs.md'
+				'/ja/?': '/ja/docs.md',
+				'/(?!en/|ja/)([A-Za-z_$][\\w$]*)': '/en/docs.md'
 			},
 			maxLevel: 3,
 			subMaxLevel: 3,
 
 			executeScript: true,
 
-			// searchbar settings
-			search: {
-				depth: 6, // Headline depth
-				paths : 'auto',
-				noData: {
-					'/': 'No results!'
-				},
-				placeholder: {
-					'/': 'Type to Search'
-				}
-			},
-			// end of searchbar
 
 			'flexible-alerts': {
 				style: "flat"
@@ -119,6 +100,100 @@
 			},
 
 			plugins: [
+				// sidebar: lodash-style method filter + [-]/[+] category toggles.
+				// docsify renders <ul><li>Category</li><ul>methods</ul><li>Category</li><ul>...</ul></ul>
+				// (methods list is a *sibling* of its category <li>), so group them by hand.
+				function sidebarToggle(hook) {
+					var open = {};      // category title -> true/false once the user has chosen
+					var query = '';
+
+					function groups() {
+						var root = document.querySelector('.sidebar-nav > ul');
+						var out = [];
+						if (!root) return out;
+						Array.prototype.forEach.call(root.children, function (el) {
+							if (el.tagName !== 'LI') return;
+							var n = el.nextElementSibling;
+							var ul = el.querySelector(':scope > ul') || (n && n.tagName === 'UL' ? n : null);
+							out.push({ li: el, ul: ul, key: (el.textContent || '').trim() });
+						});
+						return out;
+					}
+					function isOpen(g) {
+						if (query) return true;
+						if (g.key in open) return open[g.key];
+						return true;   // expanded by default; change to collapse by default
+					}
+					function render() {
+						groups().forEach(function (g) {
+							g.li.classList.toggle('collapse', !isOpen(g));
+							if (g.ul) g.ul.classList.toggle('adash-collapsed', !isOpen(g));
+						});
+					}
+					function filter() {
+						groups().forEach(function (g) {
+							var any = false;
+							// a category-name match (e.g. "seq") shows the whole category
+							var catMatch = !!query && g.key.toLowerCase().indexOf(query) > -1;
+							if (catMatch) any = true;
+							if (g.ul) g.ul.querySelectorAll('li').forEach(function (li) {
+								var a = li.querySelector(':scope > a');
+								var name = (a ? a.textContent : '').toLowerCase().replace(/^\./, '');
+								var m = !query || catMatch || name.indexOf(query) > -1;
+								li.classList.toggle('adash-hidden', !m);
+								if (m) any = true;
+							});
+							var hide = !!query && !any;
+							g.li.classList.toggle('adash-hidden', hide);
+							if (g.ul) g.ul.classList.toggle('adash-hidden', hide);
+						});
+						render();
+					}
+					hook.doneEach(function () {
+						var nav = document.querySelector('.sidebar-nav');
+						if (!nav) return;
+
+						if (!document.getElementById('adash-search')) {
+							var sb = document.createElement('div');
+							sb.id = 'adash-search';
+							sb.className = 'adash-search';
+							sb.innerHTML = '<i class="fa fa-search" aria-hidden="true"></i>' +
+								'<input type="search" placeholder="Search" aria-label="Search methods" autocomplete="off">';
+							var inp = sb.querySelector('input');
+							inp.addEventListener('input', function () {
+								query = inp.value.toLowerCase().trim().replace(/^_?\./, '');
+								filter();
+							});
+							inp.addEventListener('keydown', function (e) {
+								if (e.key === 'Enter') {
+									var first = document.querySelector('.sidebar-nav ul ul li:not(.adash-hidden) > a');
+									if (first) first.click();
+								}
+							});
+							nav.parentNode.insertBefore(sb, nav);
+						}
+
+						groups().forEach(function (g) {
+							if (!g.ul) return;
+							g.li.classList.add('adash-cat');
+							if (g.li.querySelector(':scope > .adash-toggle')) return;
+							var b = document.createElement('span');
+							b.className = 'adash-toggle';
+							b.setAttribute('role', 'button');
+							b.title = 'Expand / collapse';
+							b.addEventListener('click', function (e) {
+								e.preventDefault();
+								e.stopPropagation();
+								open[g.key] = !isOpen(g);
+								render();
+							});
+							g.li.insertBefore(b, g.li.firstChild);
+						});
+						var si = document.querySelector('#adash-search input');
+						if (si) si.placeholder = /^#\/ja(\/|$)/.test(location.hash) ? '検索' : 'Search';
+						setTimeout(filter, 0);   // after docsify marks the active item
+					});
+				},
 				// /concat -> scroll to the .concat method heading
 				function methodShortcut(hook) {
 					hook.doneEach(function () {
@@ -150,7 +225,6 @@
 		}
 	</script>
 	<script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
-	<script src="//unpkg.com/docsify/lib/plugins/search.min.js"></script>
 	<script src="//unpkg.com/docsify-copy-code"></script>
 	<script src="/js/prism-autohotkey.min.js"></script>
 	<script src="https://unpkg.com/docsify-plugin-flexible-alerts"></script>

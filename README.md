@@ -376,11 +376,11 @@ _.indexOf([1, 2, 1, 2], 2)
 _.indexOf([1, 2, 1, 2], 2, 3)
 ; => 4morpheus
 
-_.indexOf(["neo", "barney"], "trinity")
+_.indexOf(["neo", "cypher"], "trinity")
 ; => -1morpheus
 
 _.stringCaseSense := true
-_.indexOf(["neo", "barney"], "Neo")
+_.indexOf(["neo", "cypher"], "Neo")
 ; => -1
 
 ```
@@ -521,7 +521,7 @@ _.lastIndexOf([1, 2, 1, 2], 1, 2)
 ; => 1
 
 _.stringCaseSense := true
-_.lastIndexOf(["neo", "barney"], "Neo")
+_.lastIndexOf(["neo", "cypher"], "Neo")
 ; => -1
 
 ```
@@ -1576,9 +1576,9 @@ morpheus
 #### Example
 
 ```autohotkey
-str := "neo, barney, & trinity"
+str := "neo, cypher, & trinity"
 _.escape(str)
-; => "neo, barney, &amp; trinity"
+; => "neo, cypher, &amp; trinity"
 
 ```
 
@@ -1602,8 +1602,8 @@ Converts the first character of `string` to lower case.
 _.lowerFirst("Neo")
 ; => "neo"
 
-_.lowerFirst("FRED")
-; => "fRED"
+_.lowerFirst("TANK")
+; => "tANK"
 
 ```
 
@@ -1978,9 +1978,9 @@ morpheus
 #### Example
 
 ```autohotkey
-str := "neo, barney, &amp; trinity"
+str := "neo, cypher, &amp; trinity"
 _.unescape(str)
-; => "neo, barney, & trinity"
+; => "neo, cypher, & trinity"
 
 ```
 
@@ -2004,8 +2004,8 @@ Converts the first character of `string` to upper case.
 _.upperFirst("neo")
 ; => "Neo"
 
-_.upperFirst("FRED")
-; => "FRED"
+_.upperFirst("TANK")
+; => "TANK"
 
 ```
 
@@ -2029,11 +2029,11 @@ morpheus
 #### Example
 
 ```autohotkey
-_.words("neo, barney, & trinity")
-; => ["neo", "barney", "trinity"]
+_.words("neo, cypher, & trinity")
+; => ["neo", "cypher", "trinity"]
 
-_.words("neo, barney, & trinity", "[^, ]+")
-; => ["neo", "barney", "&", "trinity"]
+_.words("neo, cypher, & trinity", "[^, ]+")
+; => ["neo", "cypher", "&", "trinity"]
 
 ```
 

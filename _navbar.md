@@ -1,0 +1,10 @@
+- [Docs](/)
+- [Donate](/en/donate)
+- [News](/en/news)
+- adash.ahk
+  - [Home](/en/home)
+  - [Getting Started](/en/getting-started)
+  - [Download](/en/download)
+- Translations
+  - [:us: English](/en/docs)
+  - [:jp: 日本語](/ja/docs)
