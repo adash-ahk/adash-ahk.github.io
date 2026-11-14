@@ -1,0 +1,10 @@
+- [ドキュメント](/ja/docs)
+- [寄付](/ja/donate)
+- [ニュース](/ja/news)
+- adash.ahk
+  - [ホーム](/ja/home)
+  - [はじめに](/ja/getting-started)
+  - [ダウンロード](/ja/download)
+- 言語
+  - [:us: English](/en/docs)
+  - [:jp: 日本語](/ja/docs)
