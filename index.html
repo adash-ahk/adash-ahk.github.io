@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>adash.ahk - A modern utility library for AutoHotkey</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="description" content="A modern immutable utility library for AutoHotkey">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<link
+		rel="stylesheet"
+		href="/styles/style.css"
+		title="docsify-darklight-theme"
+		type="text/css"
+	/>
+	<link rel="icon" href="/favicon.ico" type="image/x-icon"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+	<!-- docsify-themeable -->
+	<script src="https://cdn.jsdelivr.net/npm/docsify-themeable@0"></script>
+	<!-- ads -->
+	<script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1123408"></script>
+</head>
+
+<body>
+	<!-- Top bar HTML -->
+	<div class="navbar">
+		<a href="#/en/donate">Donate</a>
+		<a href="#/en/news">News</a>
+		<a href="#/">Docs</a>
+		<div class="dropdown">
+			<button class="dropbtn">adash.ahk
+				<i class="fa fa-caret-down"></i>
+			</button>
+			<div class="dropdown-content">
+				<a href="#/en/home">Home</a>
+				<a href="#/en/getting-started">Getting Started</a>
+				<a href="#/en/download">Download</a>
+			</div>
+		</div>
+	</div>
+	<div id="app"></div>
+	<script>
+		// let /#concat work: rewrite to the docsify route /#/concat before docsify starts
+		if (/^#[A-Za-z_$][\w$]*$/.test(location.hash)) {
+			var _id = location.hash.slice(1);
+			if (_id !== 'en' && _id !== 'zh') location.replace('#/' + _id);
+		}
+	</script>
+	<script>
+		window.$docsify = {
+			homepage: 'en/docs.md',
+			// "#/" and "#/en" -> English docs; "#concat" (-> "#/concat") -> English docs scrolled to .concat
+			alias: {
+				'/en/?': '/en/docs.md',
+				'/(?!en/|zh/)([A-Za-z_$][\\w$]*)': '/en/docs.md'
+			},
+			maxLevel: 3,
+			subMaxLevel: 3,
+
+			executeScript: true,
+
+			// searchbar settings
+			search: {
+				depth: 6, // Headline depth
+				paths : 'auto',
+				noData: {
+					'/': 'No results!'
+				},
+				placeholder: {
+					'/': 'Type to Search'
+				}
+			},
+			// end of searchbar
+
+			'flexible-alerts': {
+				style: "flat"
+			},
+
+			darklightTheme: {
+				defaultTheme : 'light',
+				codeFontFamily : 'Consolas,Source Code Pro,Courier New',
+				bodyFontSize : '17px',
+				dark: {
+					accent: '#3492ff',
+					trim: '#214671',
+					toggleBackground : '#ffffff',
+					background: '#0f1216',
+					backgroundAccent: '#0e1013',
+					textColor: '#aaaaaa',
+					codeTextColor : '#f3f3f3',
+					codeBackgroundColor : '#181b1f',
+					borderColor : '#0d2538',
+					blockQuoteColor : '#D62828',
+					highlightColor : '#FDAD0D',
+					sidebarSublink : '#aaaaaa',
+					codeTypeColor : '#ffffff',
+					coverBackground : 'linear-gradient(to left bottom, hsl(118, 100%, 85%) 0%,hsl(181, 100%, 85%) 100%)',
+					toggleImage : 'url(https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/icons/sun.svg)'
+				},
+				light: {
+					accent: '#86b9f5',
+					trim: '#eee',
+					toggleBackground : '#091a28',
+					background: '#ffffff',
+					backgroundAccent: '#ffffff',
+					textColor: '#34495e',
+					codeTextColor : '#f3f3f3',
+					codeBackgroundColor : '#282c34',
+					borderColor : '#eee',
+					blockQuoteColor : '#858585',
+					highlightColor : '#86b9f5',
+					sidebarSublink : '#34495e',
+					codeTypeColor : '#091a28',
+					coverBackground : 'linear-gradient(to left bottom, hsl(118, 100%, 85%) 0%,hsl(181, 100%, 85%) 100%)',
+					toggleImage : 'url(https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/icons/moon.svg)'
+				},
+			},
+
+			plugins: [
+				// /concat -> scroll to the .concat method heading
+				function methodShortcut(hook) {
+					hook.doneEach(function () {
+						var m = location.hash.match(/^#\/([A-Za-z_$][\w$]*)\/?$/);
+						if (!m) return;
+						setTimeout(function () {
+							var el = document.getElementById(m[1].toLowerCase());
+							if (el) el.scrollIntoView();
+						}, 0);
+					});
+				},
+				// Restores initial <title>
+				function persistTitle(hook, vm) {
+					var titleElm = document.querySelector('title');
+					var rootTitle = titleElm && titleElm.textContent;
+					var pageTitlePrefix = window.$docsify.name ? window.$docsify.name + ' - ' : '';
+
+					if (rootTitle) {
+						hook.doneEach(function () {
+							var currentTitle = titleElm.textContent;
+							var isRoot = !/^#\/[a-z]/i.test(location.hash);
+							var newTitle = isRoot ? rootTitle : pageTitlePrefix + currentTitle;
+
+							titleElm.textContent = newTitle;
+						});
+					}
+				}
+			]
+		}
+	</script>
+	<script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+	<script src="//unpkg.com/docsify/lib/plugins/search.min.js"></script>
+	<script src="//unpkg.com/docsify-copy-code"></script>
+	<script src="/js/prism-autohotkey.min.js"></script>
+	<script src="https://unpkg.com/docsify-plugin-flexible-alerts"></script>
+	<script src="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js"></script>
+</body>
+<footer>
+	<script>
+		// custom js would be here
+	</script>
+</footer>
+
+</html>
